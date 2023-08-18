@@ -26,7 +26,7 @@ int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_
 
 int choose_language(void);                                         // language selection
 
-void clear (void);                                                 // clears the input buffer
+void clear(void);                                                  // clears the input buffer
 
 int main(void)
 {
@@ -50,7 +50,7 @@ int main(void)
 
     accuracy_of_answers = what_the_accuracy_of_answers(language);  // user inputs the accuracy of the answers
 
-    switch (language)
+    switch(language)
     {
     case 1:
         printf("Now enter the coefficients:\n");
@@ -65,7 +65,7 @@ int main(void)
 
     while(1)
     {
-        a = coefficient_request('a', language);                              // user enters coefficients a, b, c
+        a = coefficient_request('a', language);                    // user enters coefficients a, b, c
         b = coefficient_request('b', language);
         c = coefficient_request('c', language);
 
@@ -81,7 +81,7 @@ int main(void)
         D_equals_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
         D_is_greater_than_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
 
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("\n\nLet's get on with it! Enter the new coefficients (or press 'q' to exit):\n");
@@ -101,7 +101,7 @@ int main(void)
 // function that displays the welcome message
 void greetings(int language)
 {
-    switch (language)
+    switch(language)
     {
     case 1:
         printf("\n---- This program will calculate the real roots "
@@ -135,7 +135,7 @@ int what_the_accuracy_of_answers(int language)
     int accuracy_of_answers = 0;   // return value
     int status = 0;                // variable to check if the input is correct
 
-    switch (language)
+    switch(language)
     {
     case 1:
         printf("With what accuracy would you like to receive answers?\n");
@@ -153,7 +153,7 @@ int what_the_accuracy_of_answers(int language)
     clear();
     if (status != 1)
     {
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("Goodbye, UwU <3\n");
@@ -182,7 +182,7 @@ double coefficient_request(char variable_name, int language)
     clear();
     if (status != 1)
     {
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("Goodbye, UwU <3\n");
@@ -206,7 +206,7 @@ int zero_zero_zero(double a, double b, double c, int language)
     if (fabs(a) < DIFFERENCE && fabs(b) < DIFFERENCE && fabs(c) < DIFFERENCE)
     {
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The root of the equation is any number!\n");
@@ -229,7 +229,7 @@ int zero_zero_NOTzero(double a, double b, double c, int language)
     if (fabs(a) < DIFFERENCE && fabs(b) < DIFFERENCE && fabs(c) > DIFFERENCE)
     {
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The equation has no solutions.\n");
@@ -252,7 +252,7 @@ int zero_NOTzero_zero(double a, double b, double c, int language)
     if (fabs(a) < DIFFERENCE && fabs(b) > DIFFERENCE && fabs(c) < DIFFERENCE)
     {
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The equation has only one root!\n");
@@ -277,7 +277,7 @@ int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, 
     {
         double root = -c / b;
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         case 1:
         {
             printf("The equation has only one root!\n");
@@ -307,7 +307,7 @@ int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, 
     if (D < 0.0 && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
     {
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The equation has no real solutions.\n");
@@ -331,7 +331,7 @@ int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answer
         double root = 0;
         root = -b/(2*a);
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The equation has only one root!\n");
@@ -356,7 +356,7 @@ int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_
         double first_root = (-b - sqrt(D)) / (2*a);
         double second_root = (-b + sqrt(D)) / (2*a);
         printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch (language)
+        switch(language)
         {
         case 1:
             printf("The equation has two roots!\n");
@@ -399,7 +399,7 @@ int choose_language(void)
 }
 
 // function that clears the input buffer to avoid problems with infinite reading of the value
-void clear (void)
+void clear(void)
 {
     while (getchar() != '\n');
 }
