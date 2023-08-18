@@ -1,6 +1,9 @@
 /* quadratic_solver.cpp -- calculates the real roots
 of a quadratic equation of the form ax^2+bx+c = 0 */
 
+/* quadratic_solver.cpp -- считает действительные корни
+квадратного уравнения вида ax^2+bx+c = 0 */
+
 #include <stdio.h>
 #include <math.h>
 
@@ -12,6 +15,7 @@ int what_the_accuracy_of_answers(int language);                    // determines
 double coefficient_request(char variable_name, int language);      // assigns values to the coefficients
 
 // functions of checking all cases when a == 0
+// функции, которые проверяют все случаи, когда a == 0
 int zero_zero_zero(double a, double b, double c, int language);
 int zero_zero_NOTzero(double a, double b, double c, int language);
 int zero_NOTzero_zero(double a, double b, double c, int language);
@@ -20,35 +24,37 @@ int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, 
 double calculate_discriminant(double a, double b, double c);
 
 // different scenarios with discriminants
+// различные сценарии с дискриминантом
 int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, int x3, int x4, int language);
 int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language);
 int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language);
 
-int choose_language(void);                                         // language selection
+int choose_language(void);                                         // language selection (выбор языка)
 
-void clear(void);                                                  // clears the input buffer
+void clear(void);                                                  // clears the input buffer (очищает буфер ввода)
 
 int main(void)
 {
-    double a = 0;                                                  // coefficients
+    double a = 0;                                                  // coefficients (коэффициенты)
     double b = 0;
     double c = 0;
 
-    double D = 0;                                                  // discriminant
+    double D = 0;                                                  // discriminant (дискриминант)
 
-    int accuracy_of_answers = 0;                                   // number of digits after the decimal point
+    int accuracy_of_answers = 0;                                   // number of digits after the decimal point (количество знаков после запятой)
 
     // these variables are needed to check if the output was displayed before the discriminant scenarios
+    // эти переменные нужны, чтобы проверить, был ли вывод ответа до начала сценариев с дискриминантом
     int x1 = 0;
     int x2 = 0;
     int x3 = 0;
     int x4 = 0;
 
-    int language = choose_language();                              // language selection
+    int language = choose_language();                              // language selection (выбор языка)
 
     greetings(language);
 
-    accuracy_of_answers = what_the_accuracy_of_answers(language);  // user inputs the accuracy of the answers
+    accuracy_of_answers = what_the_accuracy_of_answers(language);  // user inputs the accuracy of the answers (ползователь вводит точность ответов)
 
     switch(language)
     {
@@ -65,11 +71,11 @@ int main(void)
 
     while(1)
     {
-        a = coefficient_request('a', language);                    // user enters coefficients a, b, c
+        a = coefficient_request('a', language);                    // user enters coefficients a, b, c (пользователь вводит коэффициенты a, b, c)
         b = coefficient_request('b', language);
         c = coefficient_request('c', language);
 
-        x1 = zero_zero_zero(a, b, c, language);                    // checking all cases when a == 0
+        x1 = zero_zero_zero(a, b, c, language);                    // checking all cases when a == 0 (проверка всех случаев, когда a == 0)
         x2 = zero_zero_NOTzero(a, b, c, language);
         x3 = zero_NOTzero_zero(a, b, c, language);
         x4 = zero_NOTzero_NOTzero(a, b, c, accuracy_of_answers, language);
@@ -77,6 +83,7 @@ int main(void)
         D = calculate_discriminant(a, b, c);
 
         // different discriminant scenarios
+        // разные сценарии с дискриминантом
         D_is_less_than_zero(a, b, c, D, x1, x2, x3, x4, language);
         D_equals_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
         D_is_greater_than_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
@@ -99,6 +106,7 @@ int main(void)
 }
 
 // function that displays the welcome message
+// функция, которая выводит приветствие
 void greetings(int language)
 {
     switch(language)
@@ -130,10 +138,11 @@ void greetings(int language)
 }
 
 // the accuracy with which the roots of the equation will be output
+// точность, с которой будут выводиться корни уравнения
 int what_the_accuracy_of_answers(int language)
 {
-    int accuracy_of_answers = 0;   // return value
-    int status = 0;                // variable to check if the input is correct
+    int accuracy_of_answers = 0;   // returned value (возвращаемое значение)
+    int status = 0;                // variable to check if the input is correct (переменная для проверки правильности ввода)
 
     switch(language)
     {
@@ -171,11 +180,12 @@ int what_the_accuracy_of_answers(int language)
 }
 
 // function that assigns values of type double to coefficients
+// функция, присваивающая знаения типа double коэффициентам
 double coefficient_request(char variable_name, int language)
 {
-    double variable_value = 0;     // return value
+    double variable_value = 0;     // returned value (возвращаемое значение)
 
-    int status = 0;                // variable to check if the input is correct
+    int status = 0;                // variable to check if the input is correct (переменная для проверки правильности ввода)
 
     printf("%c = ", variable_name);
     status = scanf("%lf", &variable_value);
@@ -201,6 +211,7 @@ double coefficient_request(char variable_name, int language)
 }
 
 // if all coefficients are equal to 0
+// если все коэффициенты равны нулю
 int zero_zero_zero(double a, double b, double c, int language)
 {
     if (fabs(a) < DIFFERENCE && fabs(b) < DIFFERENCE && fabs(c) < DIFFERENCE)
@@ -283,7 +294,7 @@ int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, 
             printf("The equation has only one root!\n");
             break;
         case 2:
-            printf("Уравенние имеет единственное решение!\n");
+            printf("Уравнение имеет единственное решение!\n");
             break;
         default:
             printf("Выбран некорректный язык.\n");
@@ -296,12 +307,14 @@ int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, 
 }
 
 // calculates the discriminant
+// считает дискриминант
 double calculate_discriminant(double a, double b, double c)
 {
     return b*b - 4*a*c;
 }
 
 // no solutions when the discriminant is less than zero
+// нет решений, когда дискриминант меньше нуля
 int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, int x3, int x4, int language)
 {
     if (D < 0.0 && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
@@ -324,6 +337,7 @@ int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, 
 }
 
 // discriminant equals 0
+// дискриминант равен нулю
 int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language)
 {
     if (fabs(D) < DIFFERENCE && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
@@ -337,7 +351,7 @@ int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answer
             printf("The equation has only one root!\n");
             break;
         case 2:
-            printf("Уравенние имеет единственное решение!\n");
+            printf("Уравнение имеет единственное решение!\n");
             break;
         default:
             printf("Выбран некорректный язык.\n");
@@ -349,6 +363,7 @@ int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answer
 }
 
 // discriminant is greater than 0
+// дискриминант больше нуля
 int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language)
 {
     if (D > 0.0 && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
@@ -374,11 +389,12 @@ int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_
 }
 
 // language selection
+// выбор языка
 int choose_language(void)
 {
-    int language = 0;
+    int language = 0;          // returned value (возвращаемое значение)
 
-    int status = 0;            // variable to check if the input is correct
+    int status = 0;            // variable to check if the input is correct (переменная для проверки правильности ввода)
 
     printf("Select your preferred language (выберите продпочитаемый язык).\n");
     printf("1. English (английский).\n");
@@ -399,6 +415,7 @@ int choose_language(void)
 }
 
 // function that clears the input buffer to avoid problems with infinite reading of the value
+// функция, очищающая входной буфер, чтобы избежать проблем с бесконечным считыванием значения переменных
 void clear(void)
 {
     while (getchar() != '\n');
