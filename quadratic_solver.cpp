@@ -1,424 +1,187 @@
-/* quadratic_solver.cpp -- calculates the real roots
-of a quadratic equation of the form ax^2+bx+c = 0 */
-
-/* quadratic_solver.cpp -- считает действительные корни
-квадратного уравнения вида ax^2+bx+c = 0 */
-
 #include <stdio.h>
 #include <math.h>
 
-#define DIFFERENCE 0.000000000001                                  // needed to compare a variable of double type with 0
-#define EXIT 400                                                   // needed to check if the output was displayed before the discriminant scenarios
-#define RUSSIAN 2                                                  // it is used in 'switch' to select the language
-#define ENGLISH 1                                                  // it is used in 'switch' to select the language
+const int INFINITE_ROOTS = 8888;
+const double EPSILON = 0.0000001;
+const int EXIT = 123123;
 
-void greetings(int language);                                      // displays the welcome message
-int what_the_accuracy_of_answers(int language);                    // determines how accurately the answers will be displayed
-double coefficient_request(char variable_name, int language);      // assigns values to the coefficients
+const int NO_ROOTS = 0;
+const int ONE_ROOT = 1;
+const int TWO_ROOTS = 2;
 
-// functions of checking all cases when a == 0
-// функции, которые проверяют все случаи, когда a == 0
-int zero_zero_zero(double a, double b, double c, int language);
-int zero_zero_NOTzero(double a, double b, double c, int language);
-int zero_NOTzero_zero(double a, double b, double c, int language);
-int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, int language);
 
+int input_coeffs(double* a, double* b, double* c);
+int get_coeff(char name_coeff, double *coeff);
+int solve_square(double a, double b, double c, double* x1, double* x2);
+void print_roots(double x1, double x2, int n_roots);
 double calculate_discriminant(double a, double b, double c);
+int solve_linear(double b, double c, double* x1, double* x2);
 
-// different scenarios with discriminants
-// различные сценарии с дискриминантом
-int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, int x3, int x4, int language);
-int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language);
-int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language);
+bool equals_zero(double number);
+bool not_equals_zero(double number);
+bool less_zero(double number);
+bool greater_zero(double number);
 
-int choose_language(void);                                         // language selection (выбор языка)
+void clear(void);
 
-void clear(void);                                                  // clears the input buffer (очищает буфер ввода)
 
 int main(void)
 {
-    double a = 0;                                                  // coefficients (коэффициенты)
-    double b = 0;
-    double c = 0;
+    double a = 0.0, b = 0.0, c = 0.0;
+    input_coeffs(&a, &b, &c);
 
-    double D = 0;                                                  // discriminant (дискриминант)
+    double x1 = 0.0, x2 = 0.0;
+    int n_roots = solve_square(a, b, c, &x1, &x2);
 
-    int accuracy_of_answers = 0;                                   // number of digits after the decimal point (количество знаков после запятой)
+    print_roots(x1, x2, n_roots);
 
-    // these variables are needed to check if the output was displayed before the discriminant scenarios
-    // эти переменные нужны, чтобы проверить, был ли вывод ответа до начала сценариев с дискриминантом
-    int x1 = 0;
-    int x2 = 0;
-    int x3 = 0;
-    int x4 = 0;
+    return 0;
+}
 
-    int language = choose_language();                              // language selection (выбор языка)
 
-    greetings(language);
+int input_coeffs(double* a, double* b, double* c)
+{
+    printf("Введите коэффициенты\n");
+    get_coeff('a', a);
+    get_coeff('b', b);
+    get_coeff('c', c);
 
-    accuracy_of_answers = what_the_accuracy_of_answers(language);  // user inputs the accuracy of the answers (ползователь вводит точность ответов)
+    return 0;
+}
 
-    switch(language)
+int get_coeff(char name_coeff, double *coeff)
+{
+    double number;
+    char buffer[100] = "";
+
+    while (1) {
+        printf("%c = ", name_coeff);
+        fgets(buffer, sizeof(buffer), stdin);
+
+        char *endptr;
+        number = strtod(buffer, &endptr);
+
+        if (endptr == buffer || *endptr != '\n')
+        {
+            printf("Ошибка ввода. Введите корректное число.\n");
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    *coeff = number;
+
+    return 0;
+}
+
+int solve_square(double a, double b, double c,
+                 double* x1, double* x2)
+{
+    if (equals_zero(a))
     {
-    case ENGLISH:
-        printf("Now enter the coefficients:\n");
+        return solve_linear(b, c, x1, x2);
+    }
+
+    double d = calculate_discriminant(a, b, c);
+
+    if (less_zero(d))
+    {
+        return NO_ROOTS;
+    }
+    else if (equals_zero(d))
+    {
+        *x1 = *x2 = -b / (2*a);
+        return ONE_ROOT;
+    }
+    else
+    {
+        *x1 = (-b - sqrt(d)) / (2*a);
+        *x2 = (-b + sqrt(d)) / (2*a);
+        return TWO_ROOTS;
+    }
+
+    return 0;
+}
+
+void print_roots(double x1, double x2, int n_roots)
+{
+    switch(n_roots)
+    {
+    case NO_ROOTS:
+        printf("Нет корней\n");
         break;
-    case RUSSIAN:
-        printf("Теперь введите коэффициенты:\n");
+    case ONE_ROOT:
+        printf("x = %g\n", x1);
+        break;
+    case TWO_ROOTS:
+        printf("x1 = %g\n", x1);
+        printf("x2 = %g\n", x2);
+        break;
+    case INFINITE_ROOTS:
+        printf("Бесконечное количество корней\n");
         break;
     default:
-        printf("Выбран некорректный язык.\n");
-        break;
-    }
-
-    while(1)
-    {
-        a = coefficient_request('a', language);                    // user enters coefficients a, b, c (пользователь вводит коэффициенты a, b, c)
-        b = coefficient_request('b', language);
-        c = coefficient_request('c', language);
-
-        x1 = zero_zero_zero(a, b, c, language);                    // checking all cases when a == 0 (проверка всех случаев, когда a == 0)
-        x2 = zero_zero_NOTzero(a, b, c, language);
-        x3 = zero_NOTzero_zero(a, b, c, language);
-        x4 = zero_NOTzero_NOTzero(a, b, c, accuracy_of_answers, language);
-
-        D = calculate_discriminant(a, b, c);
-
-        // different discriminant scenarios
-        // разные сценарии с дискриминантом
-        D_is_less_than_zero(a, b, c, D, x1, x2, x3, x4, language);
-        D_equals_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
-        D_is_greater_than_zero(a, b, c, D, accuracy_of_answers, x1, x2, x3, x4, language);
-
-        switch(language)
-        {
-        case ENGLISH:
-            printf("\n\nLet's get on with it! Enter the new coefficients (or press 'q' to exit):\n");
-            break;
-        case RUSSIAN:
-            printf("\n\nДавайте продолжим! Введите новые коэффициенты (или нажмите 'q', чтобы выйти):\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-    }
-
-    return 0;
-}
-
-// function that displays the welcome message
-// функция, которая выводит приветствие
-void greetings(int language)
-{
-    switch(language)
-    {
-    case ENGLISH:
-        printf("\n---- This program will calculate the real roots "
-               "of a quadratic equation of the form 'ax^2+bx+c = 0' ----\n");
-        printf("\nThe coefficients 'a', 'b', and 'c' are needed for the calculation.\n");
-        printf("P.S: If the coefficients are not integers, "
-               "write the integer and fractional parts through the dot.\n");
-        printf("P.P.S: To close the program, enter 'q' "
-               "(or any other character that is not a number).\n");
-        printf("Let's start!\n\n");
-        break;
-    case RUSSIAN:
-        printf("\n---- Эта программа вычислит действительные корни "
-               "квадратного уравнения вида 'ax^2+bx+c = 0' ----\n");
-        printf("\nДля расчёта необходимы коэффициенты 'a', 'b' и 'c'.\n");
-        printf("P.S: Если коэффициенты представляют собой десятичные дроби, "
-               "введите целую и дробную части, разделяя их точкой (не запятой).\n");
-        printf("P.P.S: Чтобы выйти, нажмите 'q' "
-               "(или любой другой символ, не являющийся числом).\n");
-        printf("Давайте начнем!\n\n");
-        break;
-    default:
-        printf("Выбран некорректный язык.\n");
         break;
     }
 }
 
-// the accuracy with which the roots of the equation will be output
-// точность, с которой будут выводиться корни уравнения
-int what_the_accuracy_of_answers(int language)
-{
-    int accuracy_of_answers = 0;   // returned value (возвращаемое значение)
-    int status = 0;                // variable to check if the input is correct (переменная для проверки правильности ввода)
-
-    switch(language)
-    {
-    case ENGLISH:
-        printf("With what accuracy would you like to receive answers?\n");
-        printf("        (enter the number of decimal places)\n");
-        break;
-    case RUSSIAN:
-        printf("С какой точностью вы бы хотели получать ответы?\n");
-        printf("  (введите количество знаков после запятой)\n");
-        break;
-    default:
-        printf("Выбран некорректный язык.\n");
-        break;
-    }
-    status = scanf("%d", &accuracy_of_answers);
-    clear();
-    if (status != 1)
-    {
-        switch(language)
-        {
-        case ENGLISH:
-            printf("Goodbye, UwU <3\n");
-            break;
-        case RUSSIAN:
-            printf("Пока, котик UwU <3\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        exit(1);
-    }
-    return accuracy_of_answers;
-}
-
-// function that assigns values of type double to coefficients
-// функция, присваивающая знаения типа double коэффициентам
-double coefficient_request(char variable_name, int language)
-{
-    double variable_value = 0;     // returned value (возвращаемое значение)
-
-    int status = 0;                // variable to check if the input is correct (переменная для проверки правильности ввода)
-
-    printf("%c = ", variable_name);
-    status = scanf("%lf", &variable_value);
-    clear();
-    if (status != 1)
-    {
-        switch(language)
-        {
-        case ENGLISH:
-            printf("Goodbye, UwU <3\n");
-            break;
-        case RUSSIAN:
-            printf("Пока, котик UwU <3\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        exit(1);
-    }
-
-    return variable_value;
-}
-
-// if all coefficients are equal to 0
-// если все коэффициенты равны нулю
-int zero_zero_zero(double a, double b, double c, int language)
-{
-    if (fabs(a) < DIFFERENCE && fabs(b) < DIFFERENCE && fabs(c) < DIFFERENCE)
-    {
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
-        {
-        case ENGLISH:
-            printf("The root of the equation is any number!\n");
-            break;
-        case RUSSIAN:
-            printf("Корнем уравнения является любое число!\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        return EXIT;
-    }
-    return 0;
-}
-
-// if a == 0, b == 0, c != 0
-int zero_zero_NOTzero(double a, double b, double c, int language)
-{
-    if (fabs(a) < DIFFERENCE && fabs(b) < DIFFERENCE && fabs(c) > DIFFERENCE)
-    {
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
-        {
-        case ENGLISH:
-            printf("The equation has no solutions.\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение не имеет решений.\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        return EXIT;
-    }
-    return 0;
-}
-
-// if a == 0, b != 0, c == 0
-int zero_NOTzero_zero(double a, double b, double c, int language)
-{
-    if (fabs(a) < DIFFERENCE && fabs(b) > DIFFERENCE && fabs(c) < DIFFERENCE)
-    {
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
-        {
-        case ENGLISH:
-            printf("The equation has only one root!\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение имеет единственное решение!\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        printf("x = 0.\n");
-        return EXIT;
-    }
-    return 0;
-}
-
-// if a == 0, b != 0, c != 0
-int zero_NOTzero_NOTzero(double a, double b, double c, int accuracy_of_answers, int language)
-{
-    if (fabs(a) < DIFFERENCE && fabs(b) > DIFFERENCE && fabs(c) > DIFFERENCE)
-    {
-        double root = -c / b;
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
-        {
-        case ENGLISH:
-            printf("The equation has only one root!\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение имеет единственное решение!\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
-        }
-        printf("x = %.*f.\n", accuracy_of_answers, root);
-        return EXIT;
-    }
-    return 0;
-}
-
-// calculates the discriminant
-// считает дискриминант
 double calculate_discriminant(double a, double b, double c)
 {
     return b*b - 4*a*c;
 }
 
-// no solutions when the discriminant is less than zero
-// нет решений, когда дискриминант меньше нуля
-int D_is_less_than_zero(double a, double b, double c, double D, int x1, int x2, int x3, int x4, int language)
+bool equals_zero(double number)
 {
-    if (D < 0.0 && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
+    return fabs(number) < EPSILON;
+}
+
+bool not_equals_zero(double number)
+{
+    return fabs(number) > EPSILON;
+}
+
+bool less_zero(double number)
+{
+    return number < -EPSILON;
+}
+
+bool greater_zero(double number)
+{
+    return number > EPSILON;
+}
+
+int solve_linear(double b, double c, double* x1, double* x2)
+{
+    if (equals_zero(b))
     {
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
+        if (equals_zero(c))
         {
-        case ENGLISH:
-            printf("The equation has no real solutions.\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение не имеет действительных решений.\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
+            return INFINITE_ROOTS;
+        }
+        else
+        {
+            return NO_ROOTS;
         }
     }
-    return 0;
-}
-
-// discriminant equals 0
-// дискриминант равен нулю
-int D_equals_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language)
-{
-    if (fabs(D) < DIFFERENCE && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
+    else
     {
-        double root = 0;
-        root = -b/(2*a);
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
+        if (equals_zero(c))
         {
-        case ENGLISH:
-            printf("The equation has only one root!\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение имеет единственное решение!\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
+            *x1 = *x2 = 0;
+            return ONE_ROOT;
         }
-        printf("x = %.*f.\n", accuracy_of_answers, root);
-    }
-    return 0;
-}
-
-// discriminant is greater than 0
-// дискриминант больше нуля
-int D_is_greater_than_zero(double a, double b, double c, double D, int accuracy_of_answers, int x1, int x2, int x3, int x4, int language)
-{
-    if (D > 0.0 && x1 != EXIT && x2 != EXIT && x3 != EXIT && x4 != EXIT)
-    {
-        double first_root = (-b - sqrt(D)) / (2*a);
-        double second_root = (-b + sqrt(D)) / (2*a);
-        printf("---- %.1f*x^2 + %.1f*x + %.1f = 0 ----\n", a, b, c);
-        switch(language)
+        else
         {
-        case ENGLISH:
-            printf("The equation has two roots!\n");
-            break;
-        case RUSSIAN:
-            printf("Уравнение имеет два решения!\n");
-            break;
-        default:
-            printf("Выбран некорректный язык.\n");
-            break;
+            *x1 = *x2 = -c / b;
+            return ONE_ROOT;
         }
-        printf("x1 = %.*f\nx2 = %.*f\n", accuracy_of_answers, first_root, accuracy_of_answers, second_root);
     }
-    return 0;
 }
 
-// language selection
-// выбор языка
-int choose_language(void)
-{
-    int language = 0;          // returned value (возвращаемое значение)
-
-    int status = 0;            // variable to check if the input is correct (переменная для проверки правильности ввода)
-
-    printf("Select your preferred language (выберите продпочитаемый язык).\n");
-    printf("1. English (английский).\n");
-    printf("2. Russian (русский).\n");
-    printf("Enter a number (введите номер):\n");
-    status = scanf("%d", &language);
-    clear();
-    while ((language != ENGLISH && language != RUSSIAN) || status != 1)
-    {
-        printf("You've entered something wrong... Let's try again.\n");
-        printf("(Вы ввели что-то не то... Давайте попробуем еще раз.)\n");
-        printf("Enter a number (введите номер):\n");
-        status = scanf("%d", &language);
-        clear();
-    }
-
-    return language;
-}
-
-// function that clears the input buffer to avoid problems with infinite reading of the value
-// функция, очищающая входной буфер, чтобы избежать проблем с бесконечным считыванием значения переменных
 void clear(void)
 {
     while (getchar() != '\n');
 }
+
